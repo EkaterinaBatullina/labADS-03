@@ -2,18 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.treechild;
+package com.mycompany.treetraversal;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
  *
  * @author ekaterina
  */
-public class BinaryTree {
+public class Tree {
     private Node root;
     private Node current;
-    private Stack stack1 = new Stack();
     private Stack<Node> stack = new Stack<>();
     
     public void add(int e) {
@@ -48,48 +48,68 @@ public class BinaryTree {
         }
         current = root;
     }
-       
-    public void recInOrder() {
+    
+   public void recPreOrder() {
         treatment();
-        stack1.add(new Result(current.value,0,0));
+        if (current.nextLeft != null) {
+            stack.add(current);
+            current = current.nextLeft;
+            recPreOrder();
+        }
+        if (current.nextRight != null) {
+            current = current.nextRight;
+            recPreOrder();
+        }
+        else {
+            if (!stack.isEmpty()) {
+                current = stack.pop();          
+            }
+        }
+    }
+   
+    public void recInOrder() {
         if (current.nextLeft != null) {
             stack.add(current);
             current = current.nextLeft;
             recInOrder();
         }
-        delete(current); 
+        treatment();
+        delete(current);
         if (current.nextRight != null) {
-            current = current.nextRight;
+            current= current.nextRight;
             recInOrder();
         }
         else {
             if (!stack.isEmpty()) {
                 current = stack.pop();
-                Result result = (Result) stack1.pop();
-                while (result.node != current.value) {
-                    result(result);
-                    result = (Result) stack1.pop();
-                } 
-                stack1.add(result);    
             }
-            else {
-                while (!stack1.isEmpty()) {
-                    Result result = (Result) stack1.pop();
-                    result(result);
-                }
-            }
-        }
-    }
-
-    public void treatment() {
-        for (Object e : stack1) {
-            ((Result) e).value ++;
-            ((Result) e).sum += current.value;
         }
     }
     
-    public void result(Result result) {
-        System.out.println("Узел " + result.node + " имеет " + result.value + " потомков" + ", сумма значений: " + result.sum);
+    public void recPostOrder() {
+        if (current.nextLeft != null) {
+            current = current.nextLeft;
+            recPostOrder();
+        }
+        if (current.nextRight != null) {
+            stack.add(current);
+            current = current.nextRight;
+            recPostOrder();
+        }
+        if (root != null) {
+            treatment();
+            delete(current);
+        }
+        if (root == current) {
+            root = null;
+        }
+        if (!stack.isEmpty()) {
+           current = stack.pop();
+        }  
+    }
+    
+    public void treatment() {
+        System.out.println(current.value); 
     }
     
     public void delete(Node current) {
@@ -109,5 +129,6 @@ public class BinaryTree {
                 current.nextRight.previous = null;
             }
         }
-    }     
+    }
+    
 }
